@@ -1,14 +1,17 @@
 import javafx.application.Application;
+
 import javafx.scene.Scene;
+
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+
 import javafx.scene.image.Image;
+
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+
 import javafx.stage.Stage;
 
 
@@ -22,6 +25,7 @@ public class Main extends Application {
 
     private Image userImg = new Image(this.getClass().getResourceAsStream("/images/DaUser.png"));
     private Image dukeImg = new Image(this.getClass().getResourceAsStream("/images/DaDuke.png"));
+    private Duke duke = new Duke();
 
     @Override
     public void start(Stage stage) {
@@ -56,6 +60,8 @@ public class Main extends Application {
         scrollPane.setFitToWidth(true);
 
         dialogContainer.setPrefHeight(Region.USE_COMPUTED_SIZE);
+        //Scroll down to the end every time dialogContainer's height changes.
+        dialogContainer.heightProperty().addListener((observable) -> scrollPane.setVvalue(1.0));
 
         userInput.setPrefWidth(325.0);
 
@@ -68,6 +74,33 @@ public class Main extends Application {
 
         AnchorPane.setLeftAnchor(userInput , 1.0);
         AnchorPane.setBottomAnchor(userInput, 1.0);
+
+        //Handling user input
+        // Click on send button to send.
+        sendButton.setOnMouseClicked((event) -> {
+            handleUserInput();
+        });
+
+        // Press Enter to send.
+        userInput.setOnAction((event) -> {
+            handleUserInput();
+        });
+
         stage.show();
+    }
+
+    /**
+     * Creates a dialog box containing user input, and appends it to
+     * the dialog container. Clears the user input after processing.
+     */
+    private void handleUserInput() {
+        String userText = userInput.getText();
+        String dukeText = duke.getResponse(userText);
+
+        dialogContainer.getChildren().addAll(
+                DialogBox.getUserDialog(userText, userImg),
+                DialogBox.getDukeDialog(dukeText, dukeImg)
+                );
+        userInput.clear();
     }
 }
